@@ -8970,7 +8970,7 @@ function $7aaf889172aa0226$var$BufferBigIntNotDefined() {
 class $aa8da6ac6813311d$export$f9c441b06edab239 {
     /**
    * Setup the flasher
-   */ async setup(Package, transport, espLoaderTerminal, noErase, uploadReporter) {
+   */ async setup(Package, transport, baudrate, espLoaderTerminal, noErase, uploadReporter) {
         this.Package = Package;
         this.transport = transport;
         this.espLoaderTerminal = espLoaderTerminal;
@@ -8984,7 +8984,7 @@ class $aa8da6ac6813311d$export$f9c441b06edab239 {
             debugLogging: false,
             transport: this.transport,
             baudrate: flashBaud,
-            romBaudrate: 115200,
+            romBaudrate: baudrate,
             terminal: this.espLoaderTerminal
         };
         this.esploader = new (0, $8efc799ad90ea23e$export$b0f7a6c745790308)(loaderOptions);
@@ -9117,10 +9117,10 @@ class $f9f9dab68c4886a2$export$19705fd60e4de464 {
     getData() {
         return this.data;
     }
-    async setup(transport, espLoaderTerminal, noErase, uploadReporter) {
+    async setup(transport, baudrate, espLoaderTerminal, noErase, uploadReporter) {
         switch(this.manifest.getPlatform()){
             case "esp32":
-                return await this.esp32Flasher.setup(this, transport, espLoaderTerminal, noErase, uploadReporter);
+                return await this.esp32Flasher.setup(this, transport, baudrate, espLoaderTerminal, noErase, uploadReporter);
             default:
                 throw new Error("Unsupported platform");
         }
@@ -9354,7 +9354,8 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
         console.log("Platform: " + $382e02c9bbd5d50b$var$packageEsp32.getManifest().getPlatform() + "\n");
         console.log("\n");
         const noErase = $382e02c9bbd5d50b$var$boardFlashErase.value === "noErase";
-        $382e02c9bbd5d50b$var$chip = await $382e02c9bbd5d50b$var$packageEsp32.setup($382e02c9bbd5d50b$var$transport, $382e02c9bbd5d50b$var$espLoaderTerminal, noErase, $382e02c9bbd5d50b$var$uploadReporter);
+        const baudrate = parseInt($382e02c9bbd5d50b$var$baudrates.value) || 115200;
+        $382e02c9bbd5d50b$var$chip = await $382e02c9bbd5d50b$var$packageEsp32.setup($382e02c9bbd5d50b$var$transport, baudrate, $382e02c9bbd5d50b$var$espLoaderTerminal, noErase, $382e02c9bbd5d50b$var$uploadReporter);
     } catch (e) {
         console.error(e);
         $382e02c9bbd5d50b$var$term.writeln(`Error: ${e.message}`);
@@ -9472,4 +9473,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.69bc9950.js.map
+//# sourceMappingURL=index.2ce3285d.js.map
