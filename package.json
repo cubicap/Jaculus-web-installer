@@ -1,0 +1,34 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "This an example of using esptool-js with parcel and typescript",
+  "source": "src/index.html",
+  "scripts": {
+    "dev": "npm run clean && parcel src/index.html",
+    "build": "npm run clean && parcel build src/index.html --no-optimize --public-url ./",
+    "clean": "rimraf dist .parcel-cache",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "parcelIgnore": [
+    "./docs/.+"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esptool-js": "^0.4.3",
+    "js-untar": "^2.0.0",
+    "pako": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/pako": "^2.0.3",
+    "buffer": "^6.0.3",
+    "parcel": "^2.8.3",
+    "parcel-resolver-ignore": "^2.1.5",
+    "rimraf": "^4.1.2",
+    "typescript": "^4.9.4",
+    "web-serial-polyfill": "^1.0.15"
+  },
+  "optionalDependencies": {
+    "@parcel/watcher-linux-x64-glibc": "^2.4.2-alpha.0"
+  }
+}
