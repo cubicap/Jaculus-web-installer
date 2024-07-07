@@ -16,7 +16,6 @@ const eraseButton = document.getElementById("eraseButton") as HTMLButtonElement;
 const terminal = document.getElementById("terminal");
 const programDiv = document.getElementById("program");
 const consoleDiv = document.getElementById("console");
-const lblBaudrate = document.getElementById("lblBaudrate");
 const lblConnTo = document.getElementById("lblConnTo");
 const alertDiv = document.getElementById("alertDiv");
 const progressBarDiv = document.getElementById("progressBarDiv") as HTMLDivElement;
@@ -213,10 +212,8 @@ connectButton.onclick = async () => {
   }
 
   console.log("Settings done for :" + chip);
-  lblBaudrate.style.display = "none";
   lblConnTo.innerHTML = "Connected to device: " + chip;
   lblConnTo.style.display = "block";
-  baudrates.style.display = "none";
   connectButton.style.display = "none";
   disconnectButton.style.display = "initial";
   flashButton.style.display = "initial";
@@ -285,8 +282,6 @@ disconnectButton.onclick = async () => {
   if (transport) await transport.disconnect();
 
   term.reset();
-  lblBaudrate.style.display = "initial";
-  baudrates.style.display = "initial";
   consoleBaudrates.style.display = "initial";
   connectButton.style.display = "initial";
   disconnectButton.style.display = "none";

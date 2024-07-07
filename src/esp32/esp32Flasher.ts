@@ -152,7 +152,6 @@ export class Esp32Flasher {
       });
     } finally {
       this.uploadReporter.stop();
-
       await this.esploader.hardReset();
     }
   }
@@ -185,7 +184,7 @@ export class Esp32Flasher {
       }
       const dataBuffer = this.Package.getData()[file];
       if (dataBuffer === undefined) {
-        throw new Error("File not found in package");
+        throw new Error(`File ${file} not found in package`);
       }
 
       output += "  " + file + " (at 0x" + address.toString(16) + ", " + dataBuffer.length + " bytes)\n";
