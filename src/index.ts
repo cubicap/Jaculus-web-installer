@@ -13,12 +13,10 @@ const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
 const consoleStartButton = document.getElementById("consoleStartButton") as HTMLButtonElement;
 const consoleStopButton = document.getElementById("consoleStopButton") as HTMLButtonElement;
 const eraseButton = document.getElementById("eraseButton") as HTMLButtonElement;
-
 const terminal = document.getElementById("terminal");
 const programDiv = document.getElementById("program");
 const consoleDiv = document.getElementById("console");
 const lblBaudrate = document.getElementById("lblBaudrate");
-const lblConsoleBaudrate = document.getElementById("lblConsoleBaudrate");
 const lblConnTo = document.getElementById("lblConnTo");
 const alertDiv = document.getElementById("alertDiv");
 const progressBarDiv = document.getElementById("progressBarDiv") as HTMLDivElement;
@@ -73,9 +71,16 @@ type BoardVersions = {
  */
 async function getBoardsIndex(): Promise<BoardsIndex> {
   const url = `${BOARD_INDEX_URL}/${BOARDS_INDEX_JSON}`;
-  const response = fetch(url);
-  const res = await response;
-  return await res.json();
+  try {
+    const response = fetch(url);
+    const res = await response;
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+    alertDiv.style.display = "block";
+    alertDiv.innerHTML = "Failed to load boards index - " + e.message;
+  }
+  return [];
 }
 
 /**
@@ -85,9 +90,16 @@ async function getBoardsIndex(): Promise<BoardsIndex> {
  */
 async function getBoardVersions(boardId: string): Promise<BoardVersions> {
   const url = `${BOARD_INDEX_URL}/${boardId}/${BOARD_VERSIONS_JSON}`;
-  const response = fetch(url);
-  const res = await response;
-  return await res.json();
+  try {
+    const response = fetch(url);
+    const res = await response;
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+    alertDiv.style.display = "block";
+    alertDiv.innerHTML = "Failed to load board versions: - " + e.message;
+  }
+  return [];
 }
 
 /**
@@ -163,6 +175,17 @@ boardIndex.onchange = async () => {
  * Connect to the device event
  */
 connectButton.onclick = async () => {
+  if (boardVersions.value === "") {
+    alertDiv.style.display = "block";
+    alertDiv.innerHTML = "Please select board and version";
+    return;
+  }
+  alertDiv.style.display = "none";
+  baudrates.disabled = true;
+  boardIndex.disabled = true;
+  boardVersions.disabled = true;
+  boardFlashErase.disabled = true;
+
   if (device === null) {
     // @ts-ignore
     device = await navigator.serial.requestPort({});
@@ -272,17 +295,23 @@ disconnectButton.onclick = async () => {
   lblConnTo.style.display = "none";
   alertDiv.style.display = "none";
   consoleDiv.style.display = "initial";
+
+  baudrates.disabled = false;
+  boardIndex.disabled = false;
+  boardVersions.disabled = false;
+  boardFlashErase.disabled = false;
+
   cleanUp();
 };
 
 let isConsoleClosed = false;
 consoleStartButton.onclick = async () => {
   if (device === null) {
+    // @ts-ignore
     device = await navigator.serial.requestPort({});
     transport = new Transport(device, true);
   }
-  lblConsoleBaudrate.style.display = "none";
-  consoleBaudrates.style.display = "none";
+  consoleBaudrates.disabled = true;
   consoleStartButton.style.display = "none";
   consoleStopButton.style.display = "initial";
   resetButton.style.display = "initial";
@@ -291,7 +320,7 @@ consoleStartButton.onclick = async () => {
   await transport.connect(parseInt(consoleBaudrates.value));
   isConsoleClosed = false;
 
-  while (true && !isConsoleClosed) {
+  while (!isConsoleClosed) {
     const val = await transport.rawRead();
     if (typeof val !== "undefined") {
       term.write(val);
@@ -309,8 +338,7 @@ consoleStopButton.onclick = async () => {
     await transport.waitForUnlock(1500);
   }
   term.reset();
-  lblConsoleBaudrate.style.display = "initial";
-  consoleBaudrates.style.display = "initial";
+  consoleBaudrates.disabled = false;
   consoleStartButton.style.display = "initial";
   consoleStopButton.style.display = "none";
   resetButton.style.display = "none";

@@ -2,6 +2,12 @@
 
 This is a simple web installer for [Jaculus](http://jaculus.org) - JavaScript runtime for embedded devices
 
+### Install Jaculus on your device
+![Jaculus web installer](./media/connected.png)
+
+### Serial monitor
+![Jaculus web installer](./media/monitor.png)
+
 ## Testing it locally
 
 ```
