@@ -9057,7 +9057,7 @@ class $aa8da6ac6813311d$export$f9c441b06edab239 {
             const address = parseInt(partition["address"]);
             if (address === undefined) throw new Error("No address defined for partition");
             const dataBuffer = this.Package.getData()[file];
-            if (dataBuffer === undefined) throw new Error("File not found in package");
+            if (dataBuffer === undefined) throw new Error(`File ${file} not found in package`);
             output += "  " + file + " (at 0x" + address.toString(16) + ", " + dataBuffer.length + " bytes)\n";
         }
         return output;
@@ -9212,7 +9212,6 @@ const $382e02c9bbd5d50b$var$eraseButton = document.getElementById("eraseButton")
 const $382e02c9bbd5d50b$var$terminal = document.getElementById("terminal");
 const $382e02c9bbd5d50b$var$programDiv = document.getElementById("program");
 const $382e02c9bbd5d50b$var$consoleDiv = document.getElementById("console");
-const $382e02c9bbd5d50b$var$lblBaudrate = document.getElementById("lblBaudrate");
 const $382e02c9bbd5d50b$var$lblConnTo = document.getElementById("lblConnTo");
 const $382e02c9bbd5d50b$var$alertDiv = document.getElementById("alertDiv");
 const $382e02c9bbd5d50b$var$progressBarDiv = document.getElementById("progressBarDiv");
@@ -9361,10 +9360,8 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
         $382e02c9bbd5d50b$var$term.writeln(`Error: ${e.message}`);
     }
     console.log("Settings done for :" + $382e02c9bbd5d50b$var$chip);
-    $382e02c9bbd5d50b$var$lblBaudrate.style.display = "none";
     $382e02c9bbd5d50b$var$lblConnTo.innerHTML = "Connected to device: " + $382e02c9bbd5d50b$var$chip;
     $382e02c9bbd5d50b$var$lblConnTo.style.display = "block";
-    $382e02c9bbd5d50b$var$baudrates.style.display = "none";
     $382e02c9bbd5d50b$var$connectButton.style.display = "none";
     $382e02c9bbd5d50b$var$disconnectButton.style.display = "initial";
     $382e02c9bbd5d50b$var$flashButton.style.display = "initial";
@@ -9418,8 +9415,6 @@ $382e02c9bbd5d50b$var$eraseButton.onclick = async ()=>{
 $382e02c9bbd5d50b$var$disconnectButton.onclick = async ()=>{
     if ($382e02c9bbd5d50b$var$transport) await $382e02c9bbd5d50b$var$transport.disconnect();
     $382e02c9bbd5d50b$var$term.reset();
-    $382e02c9bbd5d50b$var$lblBaudrate.style.display = "initial";
-    $382e02c9bbd5d50b$var$baudrates.style.display = "initial";
     $382e02c9bbd5d50b$var$consoleBaudrates.style.display = "initial";
     $382e02c9bbd5d50b$var$connectButton.style.display = "initial";
     $382e02c9bbd5d50b$var$disconnectButton.style.display = "none";
@@ -9473,4 +9468,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.2ce3285d.js.map
+//# sourceMappingURL=index.02998e70.js.map
