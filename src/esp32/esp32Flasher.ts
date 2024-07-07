@@ -58,6 +58,7 @@ export class Esp32Flasher {
   async setup(
       Package: Package,
       transport: Transport,
+      baudrate: number,
       espLoaderTerminal: IEspLoaderTerminal,
       noErase: boolean,
       uploadReporter: UploadReporter
@@ -80,7 +81,7 @@ export class Esp32Flasher {
       debugLogging: false,
       transport: this.transport,
       baudrate: flashBaud,
-      romBaudrate: 115200,
+      romBaudrate: baudrate,
       terminal: this.espLoaderTerminal,
     };
     this.esploader = new ESPLoader(loaderOptions);

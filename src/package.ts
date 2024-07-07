@@ -103,10 +103,10 @@ export class Package {
     return this.data;
   }
 
-  public async setup(transport: Transport, espLoaderTerminal: IEspLoaderTerminal, noErase: boolean, uploadReporter: UploadReporter): Promise<string> {
+  public async setup(transport: Transport, baudrate: number, espLoaderTerminal: IEspLoaderTerminal, noErase: boolean, uploadReporter: UploadReporter): Promise<string> {
     switch (this.manifest.getPlatform()) {
       case "esp32":
-        return await this.esp32Flasher.setup(this, transport, espLoaderTerminal, noErase, uploadReporter);
+        return await this.esp32Flasher.setup(this, transport, baudrate, espLoaderTerminal, noErase, uploadReporter);
       default:
         throw new Error("Unsupported platform");
     }

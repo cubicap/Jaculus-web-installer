@@ -204,8 +204,9 @@ connectButton.onclick = async () => {
     console.log("\n");
 
     const noErase = boardFlashErase.value === "noErase";
+    const baudrate = parseInt(baudrates.value) || 115200;
 
-    chip = await packageEsp32.setup(transport, espLoaderTerminal, noErase, uploadReporter);
+    chip = await packageEsp32.setup(transport, baudrate, espLoaderTerminal, noErase, uploadReporter);
   } catch (e) {
     console.error(e);
     term.writeln(`Error: ${e.message}`);
