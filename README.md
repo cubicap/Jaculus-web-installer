@@ -2,6 +2,8 @@
 
 This is a simple web installer for [Jaculus](http://jaculus.org) - JavaScript runtime for embedded devices
 
+Use this tool: [Jaculus web installer](https://installer.jaculus.org/)
+
 ### Install Jaculus on your device
 ![Jaculus web installer](./media/connected.png)
 
