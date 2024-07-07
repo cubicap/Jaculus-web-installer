@@ -9216,8 +9216,8 @@ const $382e02c9bbd5d50b$var$lblBaudrate = document.getElementById("lblBaudrate")
 const $382e02c9bbd5d50b$var$lblConnTo = document.getElementById("lblConnTo");
 const $382e02c9bbd5d50b$var$alertDiv = document.getElementById("alertDiv");
 const $382e02c9bbd5d50b$var$progressBarDiv = document.getElementById("progressBarDiv");
-// const BOARD_INDEX_URL = "https://f.jaculus.org/bin";
-const $382e02c9bbd5d50b$var$BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
+const $382e02c9bbd5d50b$var$BOARD_INDEX_URL = "https://f.jaculus.org/bin";
+// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
 // const BOARD_INDEX_URL = "http://localhost:8080/bin";
 const $382e02c9bbd5d50b$var$BOARDS_INDEX_JSON = "boards.json";
 const $382e02c9bbd5d50b$var$BOARD_VERSIONS_JSON = "versions.json";
@@ -9472,4 +9472,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.e822a0d6.js.map
+//# sourceMappingURL=index.69bc9950.js.map
