@@ -9213,12 +9213,11 @@ const $382e02c9bbd5d50b$var$terminal = document.getElementById("terminal");
 const $382e02c9bbd5d50b$var$programDiv = document.getElementById("program");
 const $382e02c9bbd5d50b$var$consoleDiv = document.getElementById("console");
 const $382e02c9bbd5d50b$var$lblBaudrate = document.getElementById("lblBaudrate");
-const $382e02c9bbd5d50b$var$lblConsoleBaudrate = document.getElementById("lblConsoleBaudrate");
 const $382e02c9bbd5d50b$var$lblConnTo = document.getElementById("lblConnTo");
 const $382e02c9bbd5d50b$var$alertDiv = document.getElementById("alertDiv");
 const $382e02c9bbd5d50b$var$progressBarDiv = document.getElementById("progressBarDiv");
-// const BOARD_INDEX_URL = "https://f.jaculus.org/bin";
-const $382e02c9bbd5d50b$var$BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
+const $382e02c9bbd5d50b$var$BOARD_INDEX_URL = "https://f.jaculus.org/bin";
+// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
 // const BOARD_INDEX_URL = "http://localhost:8080/bin";
 const $382e02c9bbd5d50b$var$BOARDS_INDEX_JSON = "boards.json";
 const $382e02c9bbd5d50b$var$BOARD_VERSIONS_JSON = "versions.json";
@@ -9244,9 +9243,16 @@ $382e02c9bbd5d50b$var$resetButton.style.display = "none";
  * @returns {Promise<BoardsIndex>} - List of boards
  */ async function $382e02c9bbd5d50b$var$getBoardsIndex() {
     const url = `${$382e02c9bbd5d50b$var$BOARD_INDEX_URL}/${$382e02c9bbd5d50b$var$BOARDS_INDEX_JSON}`;
-    const response = fetch(url);
-    const res = await response;
-    return await res.json();
+    try {
+        const response = fetch(url);
+        const res = await response;
+        return await res.json();
+    } catch (e) {
+        console.error(e);
+        $382e02c9bbd5d50b$var$alertDiv.style.display = "block";
+        $382e02c9bbd5d50b$var$alertDiv.innerHTML = "Failed to load boards index - " + e.message;
+    }
+    return [];
 }
 /**
  * Fetch board versions from the server
@@ -9254,9 +9260,16 @@ $382e02c9bbd5d50b$var$resetButton.style.display = "none";
  * @returns {Promise<BoardVersions>} - List of board versions
  */ async function $382e02c9bbd5d50b$var$getBoardVersions(boardId) {
     const url = `${$382e02c9bbd5d50b$var$BOARD_INDEX_URL}/${boardId}/${$382e02c9bbd5d50b$var$BOARD_VERSIONS_JSON}`;
-    const response = fetch(url);
-    const res = await response;
-    return await res.json();
+    try {
+        const response = fetch(url);
+        const res = await response;
+        return await res.json();
+    } catch (e) {
+        console.error(e);
+        $382e02c9bbd5d50b$var$alertDiv.style.display = "block";
+        $382e02c9bbd5d50b$var$alertDiv.innerHTML = "Failed to load board versions: - " + e.message;
+    }
+    return [];
 }
 /**
  * Fetch board version firmware from the server
@@ -9317,6 +9330,16 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
 /**
  * Connect to the device event
  */ $382e02c9bbd5d50b$var$connectButton.onclick = async ()=>{
+    if ($382e02c9bbd5d50b$var$boardVersions.value === "") {
+        $382e02c9bbd5d50b$var$alertDiv.style.display = "block";
+        $382e02c9bbd5d50b$var$alertDiv.innerHTML = "Please select board and version";
+        return;
+    }
+    $382e02c9bbd5d50b$var$alertDiv.style.display = "none";
+    $382e02c9bbd5d50b$var$baudrates.disabled = true;
+    $382e02c9bbd5d50b$var$boardIndex.disabled = true;
+    $382e02c9bbd5d50b$var$boardVersions.disabled = true;
+    $382e02c9bbd5d50b$var$boardFlashErase.disabled = true;
     if ($382e02c9bbd5d50b$var$device === null) {
         // @ts-ignore
         $382e02c9bbd5d50b$var$device = await navigator.serial.requestPort({});
@@ -9405,16 +9428,20 @@ $382e02c9bbd5d50b$var$disconnectButton.onclick = async ()=>{
     $382e02c9bbd5d50b$var$lblConnTo.style.display = "none";
     $382e02c9bbd5d50b$var$alertDiv.style.display = "none";
     $382e02c9bbd5d50b$var$consoleDiv.style.display = "initial";
+    $382e02c9bbd5d50b$var$baudrates.disabled = false;
+    $382e02c9bbd5d50b$var$boardIndex.disabled = false;
+    $382e02c9bbd5d50b$var$boardVersions.disabled = false;
+    $382e02c9bbd5d50b$var$boardFlashErase.disabled = false;
     $382e02c9bbd5d50b$var$cleanUp();
 };
 let $382e02c9bbd5d50b$var$isConsoleClosed = false;
 $382e02c9bbd5d50b$var$consoleStartButton.onclick = async ()=>{
     if ($382e02c9bbd5d50b$var$device === null) {
+        // @ts-ignore
         $382e02c9bbd5d50b$var$device = await navigator.serial.requestPort({});
         $382e02c9bbd5d50b$var$transport = new (0, $33f695531f73df0f$export$86495b081fef8e52)($382e02c9bbd5d50b$var$device, true);
     }
-    $382e02c9bbd5d50b$var$lblConsoleBaudrate.style.display = "none";
-    $382e02c9bbd5d50b$var$consoleBaudrates.style.display = "none";
+    $382e02c9bbd5d50b$var$consoleBaudrates.disabled = true;
     $382e02c9bbd5d50b$var$consoleStartButton.style.display = "none";
     $382e02c9bbd5d50b$var$consoleStopButton.style.display = "initial";
     $382e02c9bbd5d50b$var$resetButton.style.display = "initial";
@@ -9435,8 +9462,7 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
         await $382e02c9bbd5d50b$var$transport.waitForUnlock(1500);
     }
     $382e02c9bbd5d50b$var$term.reset();
-    $382e02c9bbd5d50b$var$lblConsoleBaudrate.style.display = "initial";
-    $382e02c9bbd5d50b$var$consoleBaudrates.style.display = "initial";
+    $382e02c9bbd5d50b$var$consoleBaudrates.disabled = false;
     $382e02c9bbd5d50b$var$consoleStartButton.style.display = "initial";
     $382e02c9bbd5d50b$var$consoleStopButton.style.display = "none";
     $382e02c9bbd5d50b$var$resetButton.style.display = "none";
@@ -9446,4 +9472,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.6856461b.js.map
+//# sourceMappingURL=index.69bc9950.js.map
