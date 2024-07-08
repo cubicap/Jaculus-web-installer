@@ -9263,12 +9263,7 @@ $382e02c9bbd5d50b$var$resetButton.style.display = "none";
         const response = fetch(url);
         const res = await response;
         let boardVersions = await res.json();
-        // sort versions in descending order
-        boardVersions = boardVersions.sort((a, b)=>{
-            if (a.version > b.version) return -1;
-            if (a.version < b.version) return 1;
-            return 0;
-        });
+        boardVersions.sort((a, b)=>a.version.localeCompare(b.version));
         return boardVersions;
     } catch (e) {
         console.error(e);
@@ -9475,4 +9470,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.9cc649d0.js.map
+//# sourceMappingURL=index.ec2bde2e.js.map
