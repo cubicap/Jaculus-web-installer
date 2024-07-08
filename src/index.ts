@@ -92,7 +92,14 @@ async function getBoardVersions(boardId: string): Promise<BoardVersions> {
   try {
     const response = fetch(url);
     const res = await response;
-    return await res.json();
+    let boardVersions: BoardVersions = await res.json();
+    // sort versions in descending order
+    boardVersions = boardVersions.sort((a, b) => {
+      if (a.version > b.version) return -1;
+      if (a.version < b.version) return 1;
+      return 0;
+    });
+    return boardVersions;
   } catch (e) {
     console.error(e);
     alertDiv.style.display = "block";
