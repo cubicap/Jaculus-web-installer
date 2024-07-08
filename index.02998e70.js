@@ -9262,9 +9262,7 @@ $382e02c9bbd5d50b$var$resetButton.style.display = "none";
     try {
         const response = fetch(url);
         const res = await response;
-        let boardVersions = await res.json();
-        boardVersions.sort((a, b)=>a.version.localeCompare(b.version));
-        return boardVersions;
+        return await res.json();
     } catch (e) {
         console.error(e);
         $382e02c9bbd5d50b$var$alertDiv.style.display = "block";
@@ -9470,4 +9468,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.ec2bde2e.js.map
+//# sourceMappingURL=index.02998e70.js.map
