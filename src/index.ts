@@ -93,12 +93,7 @@ async function getBoardVersions(boardId: string): Promise<BoardVersions> {
     const response = fetch(url);
     const res = await response;
     let boardVersions: BoardVersions = await res.json();
-    // sort versions in descending order
-    boardVersions = boardVersions.sort((a, b) => {
-      if (a.version > b.version) return -1;
-      if (a.version < b.version) return 1;
-      return 0;
-    });
+    boardVersions.sort((a, b) => a.version.localeCompare(b.version));
     return boardVersions;
   } catch (e) {
     console.error(e);
