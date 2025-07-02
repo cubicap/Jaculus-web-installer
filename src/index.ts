@@ -2,6 +2,7 @@ import { IEspLoaderTerminal } from "esptool-js/lib/esploader";
 
 const baudrates = document.getElementById("baudrates") as HTMLSelectElement;
 const boardIndex = document.getElementById("boardIndex") as HTMLSelectElement;
+const boardVariants = document.getElementById("boardVariants") as HTMLSelectElement;
 const boardFlashErase = document.getElementById("boardFlashErase") as HTMLSelectElement;
 const boardVersions = document.getElementById("boardVersions") as HTMLSelectElement;
 const consoleBaudrates = document.getElementById("consoleBaudrates") as HTMLSelectElement;
@@ -21,9 +22,9 @@ const alertDiv = document.getElementById("alertDiv");
 const progressBarDiv = document.getElementById("progressBarDiv") as HTMLDivElement;
 
 const BOARD_INDEX_URL = "https://f.jaculus.org/bin";
-// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
-// const BOARD_INDEX_URL = "http://localhost:8080/bin";
-const BOARDS_INDEX_JSON = "boards.json";
+// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers 
+//const BOARD_INDEX_URL = "/bin";
+const BOARDS_INDEX_JSON = "boards2.json";
 const BOARD_VERSIONS_JSON = "versions.json";
 
 // This is a frontend example of Esptool-JS using local bundle file
@@ -55,14 +56,27 @@ eraseButton.style.display = "none";
 consoleStopButton.style.display = "none";
 resetButton.style.display = "none";
 
-type BoardsIndex = {
-  board: string;
+type BoardVariants = {
+  name: string;
   id: string;
+}[];
+
+type BoardsIndex = {
+  chip: string;
+  variants: BoardVariants;
 }[];
 
 type BoardVersions = {
   version: string;
 }[];
+
+/**
+ * Clear previous errors as the settings might have changed to valid combination
+ */
+function clearErrors() {
+  alertDiv.style.display = "none";
+  alertDiv.innerHTML = "";
+}
 
 /**
  * Fetch boards index from the server
@@ -96,7 +110,7 @@ async function getBoardVersions(boardId: string): Promise<BoardVersions> {
   } catch (e) {
     console.error(e);
     alertDiv.style.display = "block";
-    alertDiv.innerHTML = "Failed to load board versions: - " + e.message;
+    alertDiv.innerHTML = "Failed to load board versions (this board:variant combination might not exist)";
   }
   return [];
 }
@@ -112,11 +126,28 @@ function getBoardVersionFirmwareTarUrl(boardId: string, version: string): string
 }
 
 /**
+ * Load board variants and populate the dropdown
+ */
+async function loadBoardsVariants() {
+  const chip = boardIndex.value;
+  const boards = await getBoardsIndex();
+  const variants = boards.find(board => board.chip === chip).variants;
+ 
+  boardVariants.innerHTML = "";
+  for (const variant of variants) {
+    const option = document.createElement("option");
+    option.value = variant.id;
+    option.text = variant.name;
+    boardVariants.appendChild(option);
+  }
+}
+
+/**
  * Load board versions and populate the dropdown
  */
 async function loadBoardsVersions() {
-  const boardId = boardIndex.value;
-  const versions = await getBoardVersions(boardId);
+  const boardVariant = boardVariants.value;
+  const versions = await getBoardVersions(boardVariant);
   boardVersions.innerHTML = "";
   for (const version of versions) {
     const option = document.createElement("option");
@@ -155,11 +186,12 @@ window.onload = async () => {
   const boards = await getBoardsIndex();
   for (const board of boards) {
     const option = document.createElement("option");
-    option.value = board.id;
-    option.text = board.board;
+    option.value = board.chip;
+    option.text = board.chip;
     boardIndex.appendChild(option);
   }
   // Load board versions for the first board
+  await loadBoardsVariants();
   await loadBoardsVersions();
 };
 
@@ -167,8 +199,19 @@ window.onload = async () => {
  * Listen to board index change event
  */
 boardIndex.onchange = async () => {
+  clearErrors();
+  await loadBoardsVariants();
   await loadBoardsVersions();
 };
+
+/**
+ * Listen to board variant change event
+ */
+boardVariants.onchange = async () => {
+  clearErrors();
+  await loadBoardsVersions();
+};
+
 
 /**
  * Connect to the device event
@@ -194,7 +237,7 @@ connectButton.onclick = async () => {
   try {
     console.log("Loading package...\n");
 
-    const pkgPath = getBoardVersionFirmwareTarUrl(boardIndex.value, boardVersions.value);
+    const pkgPath = getBoardVersionFirmwareTarUrl(boardVariants.value, boardVersions.value);
     packageEsp32 = await loadPackage(pkgPath);
 
     console.log("Version: " + packageEsp32.getManifest().getVersion() + "\n");
