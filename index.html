@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
         <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
         <link rel="icon" href="favicon.ee2246ac.ico">
-         <script type="module" src="index.runtime.70600013.js"></script><script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js"></script>
+         <script type="module" src="index.runtime.3ecc4ed7.js"></script><script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js"></script>
          <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
          <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -36,14 +36,19 @@
 
                 <br><br>
 
-                <label for="boardIndex" id="lblboardIndex">Select board:</label>
-                <select name="boardIndex" id="boardIndex">
+                <label for="chipIndex" id="lblchipIndex">Select chip:</label>
+                <select name="chipIndex" id="chipIndex">
+                </select>
+                <br><br>
+
+		<label for="variants" id="lblvariants">Select variant:</label>
+                <select name="variants" id="variants">
                 </select>
                 <br><br>
 
 
-                <label for="boardVersions" id="lblboardVersions">Select board version:</label>
-                <select name="boardVersions" id="boardVersions">
+                <label for="jacVersions" id="lbljacVersions">Select Jaculus version:</label>
+                <select name="jacVersions" id="jacVersions">
                 </select>
                 <br><br>
 
@@ -88,7 +93,7 @@
             </div>
             <div id="terminal"></div>
         </div>
-        <script src="index.02998e70.js" type="module"></script>
+        <script src="index.3687083b.js" type="module"></script>
         <script>// Safari 3.0+ "[object HTMLElementConstructor]"
 var isSafari = /constructor/i.test(window.HTMLElement) || function(p) {
     return p.toString() === "[object SafariRemoteNotification]";

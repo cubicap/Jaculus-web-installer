@@ -9197,9 +9197,10 @@ async function $f9f9dab68c4886a2$export$b6795a65d4dff5ed(uri) {
 
 
 const $382e02c9bbd5d50b$var$baudrates = document.getElementById("baudrates");
-const $382e02c9bbd5d50b$var$boardIndex = document.getElementById("boardIndex");
+const $382e02c9bbd5d50b$var$chipIndex = document.getElementById("chipIndex");
+const $382e02c9bbd5d50b$var$variants = document.getElementById("variants");
 const $382e02c9bbd5d50b$var$boardFlashErase = document.getElementById("boardFlashErase");
-const $382e02c9bbd5d50b$var$boardVersions = document.getElementById("boardVersions");
+const $382e02c9bbd5d50b$var$jacVersions = document.getElementById("jacVersions");
 const $382e02c9bbd5d50b$var$consoleBaudrates = document.getElementById("consoleBaudrates");
 const $382e02c9bbd5d50b$var$connectButton = document.getElementById("connectButton");
 const $382e02c9bbd5d50b$var$flashButton = document.getElementById("flashButton");
@@ -9216,8 +9217,6 @@ const $382e02c9bbd5d50b$var$lblConnTo = document.getElementById("lblConnTo");
 const $382e02c9bbd5d50b$var$alertDiv = document.getElementById("alertDiv");
 const $382e02c9bbd5d50b$var$progressBarDiv = document.getElementById("progressBarDiv");
 const $382e02c9bbd5d50b$var$BOARD_INDEX_URL = "https://f.jaculus.org/bin";
-// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
-// const BOARD_INDEX_URL = "http://localhost:8080/bin";
 const $382e02c9bbd5d50b$var$BOARDS_INDEX_JSON = "boards.json";
 const $382e02c9bbd5d50b$var$BOARD_VERSIONS_JSON = "versions.json";
 // @ts-ignore
@@ -9237,6 +9236,12 @@ $382e02c9bbd5d50b$var$traceButton.style.display = "none";
 $382e02c9bbd5d50b$var$eraseButton.style.display = "none";
 $382e02c9bbd5d50b$var$consoleStopButton.style.display = "none";
 $382e02c9bbd5d50b$var$resetButton.style.display = "none";
+/**
+ * Clear previous errors as the settings might have changed to valid combination
+ */ function $382e02c9bbd5d50b$var$clearErrors() {
+    $382e02c9bbd5d50b$var$alertDiv.style.display = "none";
+    $382e02c9bbd5d50b$var$alertDiv.innerHTML = "";
+}
 /**
  * Fetch boards index from the server
  * @returns {Promise<BoardsIndex>} - List of boards
@@ -9266,7 +9271,7 @@ $382e02c9bbd5d50b$var$resetButton.style.display = "none";
     } catch (e) {
         console.error(e);
         $382e02c9bbd5d50b$var$alertDiv.style.display = "block";
-        $382e02c9bbd5d50b$var$alertDiv.innerHTML = "Failed to load board versions: - " + e.message;
+        $382e02c9bbd5d50b$var$alertDiv.innerHTML = "Failed to load board versions (this board:variant combination might not exist)";
     }
     return [];
 }
@@ -9279,16 +9284,30 @@ $382e02c9bbd5d50b$var$resetButton.style.display = "none";
     return `${$382e02c9bbd5d50b$var$BOARD_INDEX_URL}/${boardId}/${boardId}-${version}.tar.gz`;
 }
 /**
+ * Load board variants and populate the dropdown
+ */ async function $382e02c9bbd5d50b$var$loadVariants() {
+    const chip = $382e02c9bbd5d50b$var$chipIndex.value;
+    const boards = await $382e02c9bbd5d50b$var$getBoardsIndex();
+    const variants_list = boards.find((board)=>board.chip === chip).variants;
+    $382e02c9bbd5d50b$var$variants.innerHTML = "";
+    for (const variant of variants_list){
+        const option = document.createElement("option");
+        option.value = variant.id;
+        option.text = variant.name;
+        $382e02c9bbd5d50b$var$variants.appendChild(option);
+    }
+}
+/**
  * Load board versions and populate the dropdown
- */ async function $382e02c9bbd5d50b$var$loadBoardsVersions() {
-    const boardId = $382e02c9bbd5d50b$var$boardIndex.value;
+ */ async function $382e02c9bbd5d50b$var$loadjacVersions() {
+    const boardId = $382e02c9bbd5d50b$var$variants.value;
     const versions = await $382e02c9bbd5d50b$var$getBoardVersions(boardId);
-    $382e02c9bbd5d50b$var$boardVersions.innerHTML = "";
+    $382e02c9bbd5d50b$var$jacVersions.innerHTML = "";
     for (const version of versions){
         const option = document.createElement("option");
         option.value = version.version;
         option.text = version.version;
-        $382e02c9bbd5d50b$var$boardVersions.appendChild(option);
+        $382e02c9bbd5d50b$var$jacVersions.appendChild(option);
     }
 }
 const $382e02c9bbd5d50b$var$espLoaderTerminal = {
@@ -9314,30 +9333,40 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
     const boards = await $382e02c9bbd5d50b$var$getBoardsIndex();
     for (const board of boards){
         const option = document.createElement("option");
-        option.value = board.id;
-        option.text = board.board;
-        $382e02c9bbd5d50b$var$boardIndex.appendChild(option);
+        option.value = board.chip;
+        option.text = board.chip;
+        $382e02c9bbd5d50b$var$chipIndex.appendChild(option);
     }
     // Load board versions for the first board
-    await $382e02c9bbd5d50b$var$loadBoardsVersions();
+    await $382e02c9bbd5d50b$var$loadVariants();
+    await $382e02c9bbd5d50b$var$loadjacVersions();
 };
 /**
  * Listen to board index change event
- */ $382e02c9bbd5d50b$var$boardIndex.onchange = async ()=>{
-    await $382e02c9bbd5d50b$var$loadBoardsVersions();
+ */ $382e02c9bbd5d50b$var$chipIndex.onchange = async ()=>{
+    $382e02c9bbd5d50b$var$clearErrors();
+    await $382e02c9bbd5d50b$var$loadVariants();
+    await $382e02c9bbd5d50b$var$loadjacVersions();
+};
+/**
+ * Listen to board variant change event
+ */ $382e02c9bbd5d50b$var$variants.onchange = async ()=>{
+    $382e02c9bbd5d50b$var$clearErrors();
+    await $382e02c9bbd5d50b$var$loadjacVersions();
 };
 /**
  * Connect to the device event
  */ $382e02c9bbd5d50b$var$connectButton.onclick = async ()=>{
-    if ($382e02c9bbd5d50b$var$boardVersions.value === "") {
+    if ($382e02c9bbd5d50b$var$jacVersions.value === "") {
         $382e02c9bbd5d50b$var$alertDiv.style.display = "block";
         $382e02c9bbd5d50b$var$alertDiv.innerHTML = "Please select board and version";
         return;
     }
     $382e02c9bbd5d50b$var$alertDiv.style.display = "none";
     $382e02c9bbd5d50b$var$baudrates.disabled = true;
-    $382e02c9bbd5d50b$var$boardIndex.disabled = true;
-    $382e02c9bbd5d50b$var$boardVersions.disabled = true;
+    $382e02c9bbd5d50b$var$chipIndex.disabled = true;
+    $382e02c9bbd5d50b$var$variants.disabled = true;
+    $382e02c9bbd5d50b$var$jacVersions.disabled = true;
     $382e02c9bbd5d50b$var$boardFlashErase.disabled = true;
     if ($382e02c9bbd5d50b$var$device === null) {
         // @ts-ignore
@@ -9346,7 +9375,7 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
     }
     try {
         console.log("Loading package...\n");
-        const pkgPath = $382e02c9bbd5d50b$var$getBoardVersionFirmwareTarUrl($382e02c9bbd5d50b$var$boardIndex.value, $382e02c9bbd5d50b$var$boardVersions.value);
+        const pkgPath = $382e02c9bbd5d50b$var$getBoardVersionFirmwareTarUrl($382e02c9bbd5d50b$var$variants.value, $382e02c9bbd5d50b$var$jacVersions.value);
         $382e02c9bbd5d50b$var$packageEsp32 = await (0, $f9f9dab68c4886a2$export$b6795a65d4dff5ed)(pkgPath);
         console.log("Version: " + $382e02c9bbd5d50b$var$packageEsp32.getManifest().getVersion() + "\n");
         console.log("Board: " + $382e02c9bbd5d50b$var$packageEsp32.getManifest().getBoard() + "\n");
@@ -9425,8 +9454,9 @@ $382e02c9bbd5d50b$var$disconnectButton.onclick = async ()=>{
     $382e02c9bbd5d50b$var$alertDiv.style.display = "none";
     $382e02c9bbd5d50b$var$consoleDiv.style.display = "initial";
     $382e02c9bbd5d50b$var$baudrates.disabled = false;
-    $382e02c9bbd5d50b$var$boardIndex.disabled = false;
-    $382e02c9bbd5d50b$var$boardVersions.disabled = false;
+    $382e02c9bbd5d50b$var$chipIndex.disabled = false;
+    $382e02c9bbd5d50b$var$variants.disabled = false;
+    $382e02c9bbd5d50b$var$jacVersions.disabled = false;
     $382e02c9bbd5d50b$var$boardFlashErase.disabled = false;
     $382e02c9bbd5d50b$var$cleanUp();
 };
@@ -9468,4 +9498,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.02998e70.js.map
+//# sourceMappingURL=index.3687083b.js.map
