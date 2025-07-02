@@ -1,10 +1,10 @@
 import { IEspLoaderTerminal } from "esptool-js/lib/esploader";
 
 const baudrates = document.getElementById("baudrates") as HTMLSelectElement;
-const boardIndex = document.getElementById("boardIndex") as HTMLSelectElement;
-const boardVariants = document.getElementById("boardVariants") as HTMLSelectElement;
+const chipIndex = document.getElementById("chipIndex") as HTMLSelectElement;
+const variants = document.getElementById("variants") as HTMLSelectElement;
 const boardFlashErase = document.getElementById("boardFlashErase") as HTMLSelectElement;
-const boardVersions = document.getElementById("boardVersions") as HTMLSelectElement;
+const jacVersions = document.getElementById("jacVersions") as HTMLSelectElement;
 const consoleBaudrates = document.getElementById("consoleBaudrates") as HTMLSelectElement;
 const connectButton = document.getElementById("connectButton") as HTMLButtonElement;
 const flashButton = document.getElementById("flashButton") as HTMLButtonElement;
@@ -128,32 +128,32 @@ function getBoardVersionFirmwareTarUrl(boardId: string, version: string): string
 /**
  * Load board variants and populate the dropdown
  */
-async function loadBoardsVariants() {
-  const chip = boardIndex.value;
+async function loadVariants() {
+  const chip = chipIndex.value;
   const boards = await getBoardsIndex();
-  const variants = boards.find(board => board.chip === chip).variants;
+  const variants_list = boards.find(board => board.chip === chip).variants;
  
-  boardVariants.innerHTML = "";
-  for (const variant of variants) {
+  variants.innerHTML = "";
+  for (const variant of variants_list) {
     const option = document.createElement("option");
     option.value = variant.id;
     option.text = variant.name;
-    boardVariants.appendChild(option);
+    variants.appendChild(option);
   }
 }
 
 /**
  * Load board versions and populate the dropdown
  */
-async function loadBoardsVersions() {
-  const boardId = boardVariants.value;
+async function loadjacVersions() {
+  const boardId = variants.value;
   const versions = await getBoardVersions(boardId);
-  boardVersions.innerHTML = "";
+  jacVersions.innerHTML = "";
   for (const version of versions) {
     const option = document.createElement("option");
     option.value = version.version;
     option.text = version.version;
-    boardVersions.appendChild(option);
+    jacVersions.appendChild(option);
   }
 }
 
@@ -188,28 +188,28 @@ window.onload = async () => {
     const option = document.createElement("option");
     option.value = board.chip;
     option.text = board.chip;
-    boardIndex.appendChild(option);
+    chipIndex.appendChild(option);
   }
   // Load board versions for the first board
-  await loadBoardsVariants();
-  await loadBoardsVersions();
+  await loadVariants();
+  await loadjacVersions();
 };
 
 /**
  * Listen to board index change event
  */
-boardIndex.onchange = async () => {
+chipIndex.onchange = async () => {
   clearErrors();
-  await loadBoardsVariants();
-  await loadBoardsVersions();
+  await loadVariants();
+  await loadjacVersions();
 };
 
 /**
  * Listen to board variant change event
  */
-boardVariants.onchange = async () => {
+variants.onchange = async () => {
   clearErrors();
-  await loadBoardsVersions();
+  await loadjacVersions();
 };
 
 
@@ -217,15 +217,16 @@ boardVariants.onchange = async () => {
  * Connect to the device event
  */
 connectButton.onclick = async () => {
-  if (boardVersions.value === "") {
+  if (jacVersions.value === "") {
     alertDiv.style.display = "block";
     alertDiv.innerHTML = "Please select board and version";
     return;
   }
   alertDiv.style.display = "none";
   baudrates.disabled = true;
-  boardIndex.disabled = true;
-  boardVersions.disabled = true;
+  chipIndex.disabled = true;
+  variants.disabled = true;
+  jacVersions.disabled = true;
   boardFlashErase.disabled = true;
 
   if (device === null) {
@@ -237,7 +238,7 @@ connectButton.onclick = async () => {
   try {
     console.log("Loading package...\n");
 
-    const pkgPath = getBoardVersionFirmwareTarUrl(boardVariants.value, boardVersions.value);
+    const pkgPath = getBoardVersionFirmwareTarUrl(variants.value, jacVersions.value);
     packageEsp32 = await loadPackage(pkgPath);
 
     console.log("Version: " + packageEsp32.getManifest().getVersion() + "\n");
@@ -336,8 +337,9 @@ disconnectButton.onclick = async () => {
   consoleDiv.style.display = "initial";
 
   baudrates.disabled = false;
-  boardIndex.disabled = false;
-  boardVersions.disabled = false;
+  chipIndex.disabled = false;
+  variants.disabled = false;
+  jacVersions.disabled = false;
   boardFlashErase.disabled = false;
 
   cleanUp();
