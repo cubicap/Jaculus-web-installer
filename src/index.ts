@@ -22,9 +22,7 @@ const alertDiv = document.getElementById("alertDiv");
 const progressBarDiv = document.getElementById("progressBarDiv") as HTMLDivElement;
 
 const BOARD_INDEX_URL = "https://f.jaculus.org/bin";
-// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
-//const BOARD_INDEX_URL = "http://localhost:8080";
-const BOARDS_INDEX_JSON = "boards2.json";
+const BOARDS_INDEX_JSON = "boards.json";
 const BOARD_VERSIONS_JSON = "versions.json";
 
 // This is a frontend example of Esptool-JS using local bundle file
@@ -132,7 +130,7 @@ async function loadVariants() {
   const chip = chipIndex.value;
   const boards = await getBoardsIndex();
   const variants_list = boards.find(board => board.chip === chip).variants;
- 
+
   variants.innerHTML = "";
   for (const variant of variants_list) {
     const option = document.createElement("option");
