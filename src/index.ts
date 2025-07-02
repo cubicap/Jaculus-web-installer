@@ -22,8 +22,8 @@ const alertDiv = document.getElementById("alertDiv");
 const progressBarDiv = document.getElementById("progressBarDiv") as HTMLDivElement;
 
 const BOARD_INDEX_URL = "https://f.jaculus.org/bin";
-// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers 
-//const BOARD_INDEX_URL = "/bin";
+// const BOARD_INDEX_URL = "https://f.kubaandrysek.cz/bin"; // proxy to f.jaculus.org (added CORS headers)
+//const BOARD_INDEX_URL = "http://localhost:8080";
 const BOARDS_INDEX_JSON = "boards2.json";
 const BOARD_VERSIONS_JSON = "versions.json";
 
@@ -146,8 +146,8 @@ async function loadBoardsVariants() {
  * Load board versions and populate the dropdown
  */
 async function loadBoardsVersions() {
-  const boardVariant = boardVariants.value;
-  const versions = await getBoardVersions(boardVariant);
+  const boardId = boardVariants.value;
+  const versions = await getBoardVersions(boardId);
   boardVersions.innerHTML = "";
   for (const version of versions) {
     const option = document.createElement("option");
