@@ -176,6 +176,64 @@ const uploadReporter: UploadReporter = new UploadReporter(progressBarDiv);
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
  */
 
+function findNewestVersion(versions) {
+  if (!versions || versions.length === 0) {
+    return null;
+  }
+  
+  function compareVersions(a, b) {
+    const aParts = a.split('.').map(Number);
+    const bParts = b.split('.').map(Number);
+    
+    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+      const aPart = aParts[i] || 0; 
+	  const bPart = bParts[i] || 0;
+      
+      if (aPart > bPart) return 1;
+      if (aPart < bPart) return -1;
+    }
+    
+    return 0;
+  }
+  
+  return versions.reduce((newest, current) => {
+    return compareVersions(current, newest) > 0 ? current : newest;
+  });
+}
+
+
+async function setValuesFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const baudrate = urlParams.get("baudrate");
+  const chip = urlParams.get("chip");
+  const variant = urlParams.get("variant");
+  const version = urlParams.get("version");
+  const erase = urlParams.get("erase");
+
+  if (baudrate && Array.from(baudrates.options).some(option => option.value === baudrate)) {
+	baudrates.value = baudrate;
+  }
+  if (chip && Array.from(chipIndex.options).some(option => option.value === chip)) {
+	chipIndex.value = chip;
+	await onChangeChipIndex();
+  }
+  if (variant && Array.from(variants.options).some(option => option.value === variant)) {
+	variants.value = variant;
+	await onChangeVariants();
+  }
+  if (version && Array.from(jacVersions.options).some(option => option.value === version)) {
+    if (version === "latest") {
+	  jacVersions.value = findNewestVersion(Array.from(jacVersions.options).map(option => option.value));
+	} else {
+	  jacVersions.value = version;
+	}
+	jacVersions.dispatchEvent(new Event("change"));
+  }
+  if (erase && Array.from(boardFlashErase.options).some(option => option.value === erase)) {
+	boardFlashErase.value = erase;
+	boardFlashErase.dispatchEvent(new Event("change"));
+  }
+}
 
 /**
  * Load boards index and populate the dropdown
@@ -191,24 +249,29 @@ window.onload = async () => {
   // Load board versions for the first board
   await loadVariants();
   await loadjacVersions();
+
+  await setValuesFromUrl();
 };
+
 
 /**
  * Listen to board index change event
  */
-chipIndex.onchange = async () => {
+async function onChangeChipIndex() {
   clearErrors();
   await loadVariants();
   await loadjacVersions();
-};
+}
+chipIndex.onchange = onChangeChipIndex;
 
 /**
  * Listen to board variant change event
  */
-variants.onchange = async () => {
-  clearErrors();
-  await loadjacVersions();
-};
+async function onChangeVariants() {
+	clearErrors();
+	await loadjacVersions();
+}
+variants.onchange = onChangeVariants;
 
 
 /**
