@@ -9327,7 +9327,50 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
  * The built-in Event object.
  * @external Event
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Event}
- */ /**
+ */ function $382e02c9bbd5d50b$var$findNewestVersion(versions) {
+    if (!versions || versions.length === 0) return null;
+    function compareVersions(a, b) {
+        const aParts = a.split(".").map(Number);
+        const bParts = b.split(".").map(Number);
+        for(let i = 0; i < Math.max(aParts.length, bParts.length); i++){
+            const aPart = aParts[i] || 0;
+            const bPart = bParts[i] || 0;
+            if (aPart > bPart) return 1;
+            if (aPart < bPart) return -1;
+        }
+        return 0;
+    }
+    return versions.reduce((newest, current)=>{
+        return compareVersions(current, newest) > 0 ? current : newest;
+    });
+}
+async function $382e02c9bbd5d50b$var$setValuesFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const baudrate = urlParams.get("baudrate");
+    const chip = urlParams.get("chip");
+    const variant = urlParams.get("variant");
+    const version = urlParams.get("version");
+    const erase = urlParams.get("erase");
+    if (baudrate && Array.from($382e02c9bbd5d50b$var$baudrates.options).some((option)=>option.value === baudrate)) $382e02c9bbd5d50b$var$baudrates.value = baudrate;
+    if (chip && Array.from($382e02c9bbd5d50b$var$chipIndex.options).some((option)=>option.value === chip)) {
+        $382e02c9bbd5d50b$var$chipIndex.value = chip;
+        await $382e02c9bbd5d50b$var$onChangeChipIndex();
+    }
+    if (variant && Array.from($382e02c9bbd5d50b$var$variants.options).some((option)=>option.value === variant)) {
+        $382e02c9bbd5d50b$var$variants.value = variant;
+        await $382e02c9bbd5d50b$var$onChangeVariants();
+    }
+    if (version && Array.from($382e02c9bbd5d50b$var$jacVersions.options).some((option)=>option.value === version)) {
+        if (version === "latest") $382e02c9bbd5d50b$var$jacVersions.value = $382e02c9bbd5d50b$var$findNewestVersion(Array.from($382e02c9bbd5d50b$var$jacVersions.options).map((option)=>option.value));
+        else $382e02c9bbd5d50b$var$jacVersions.value = version;
+        $382e02c9bbd5d50b$var$jacVersions.dispatchEvent(new Event("change"));
+    }
+    if (erase && Array.from($382e02c9bbd5d50b$var$boardFlashErase.options).some((option)=>option.value === erase)) {
+        $382e02c9bbd5d50b$var$boardFlashErase.value = erase;
+        $382e02c9bbd5d50b$var$boardFlashErase.dispatchEvent(new Event("change"));
+    }
+}
+/**
  * Load boards index and populate the dropdown
  */ window.onload = async ()=>{
     const boards = await $382e02c9bbd5d50b$var$getBoardsIndex();
@@ -9340,20 +9383,23 @@ const $382e02c9bbd5d50b$var$uploadReporter = new (0, $d604c58244232f39$export$d7
     // Load board versions for the first board
     await $382e02c9bbd5d50b$var$loadVariants();
     await $382e02c9bbd5d50b$var$loadjacVersions();
+    await $382e02c9bbd5d50b$var$setValuesFromUrl();
 };
 /**
  * Listen to board index change event
- */ $382e02c9bbd5d50b$var$chipIndex.onchange = async ()=>{
+ */ async function $382e02c9bbd5d50b$var$onChangeChipIndex() {
     $382e02c9bbd5d50b$var$clearErrors();
     await $382e02c9bbd5d50b$var$loadVariants();
     await $382e02c9bbd5d50b$var$loadjacVersions();
-};
+}
+$382e02c9bbd5d50b$var$chipIndex.onchange = $382e02c9bbd5d50b$var$onChangeChipIndex;
 /**
  * Listen to board variant change event
- */ $382e02c9bbd5d50b$var$variants.onchange = async ()=>{
+ */ async function $382e02c9bbd5d50b$var$onChangeVariants() {
     $382e02c9bbd5d50b$var$clearErrors();
     await $382e02c9bbd5d50b$var$loadjacVersions();
-};
+}
+$382e02c9bbd5d50b$var$variants.onchange = $382e02c9bbd5d50b$var$onChangeVariants;
 /**
  * Connect to the device event
  */ $382e02c9bbd5d50b$var$connectButton.onclick = async ()=>{
@@ -9498,4 +9544,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.3687083b.js.map
+//# sourceMappingURL=index.9ae2665d.js.map
