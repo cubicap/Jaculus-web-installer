@@ -13,7 +13,6 @@ const disconnectButton = document.getElementById("disconnectButton") as HTMLButt
 const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
 const consoleStartButton = document.getElementById("consoleStartButton") as HTMLButtonElement;
 const consoleStopButton = document.getElementById("consoleStopButton") as HTMLButtonElement;
-const eraseButton = document.getElementById("eraseButton") as HTMLButtonElement;
 const terminal = document.getElementById("terminal");
 const programDiv = document.getElementById("program");
 const consoleDiv = document.getElementById("console");
@@ -28,7 +27,7 @@ const BOARD_VERSIONS_JSON = "versions.json";
 // This is a frontend example of Esptool-JS using local bundle file
 // To optimize use a CDN hosted version like
 // https://unpkg.com/esptool-js@0.2.0/bundle.js
-import { ESPLoader, Transport } from "esptool-js";
+import { Transport } from "esptool-js";
 import { serial } from "web-serial-polyfill";
 import { loadPackage, Package } from "./package";
 import { UploadReporter } from "./UploadReporter";
@@ -37,20 +36,17 @@ import { UploadReporter } from "./UploadReporter";
 if (!navigator.serial && navigator.usb) navigator.serial = serial;
 
 declare let Terminal; // Terminal is imported in HTML script
-declare let CryptoJS; // CryptoJS is imported in HTML script
 
 const term = new Terminal({ cols: 120, rows: 40 });
 term.open(terminal);
 
 let device = null;
 let transport: Transport;
-let esploader: ESPLoader;
 let chip: string = null
 
 disconnectButton.style.display = "none";
 flashButton.style.display = "none";
 traceButton.style.display = "none";
-eraseButton.style.display = "none";
 consoleStopButton.style.display = "none";
 resetButton.style.display = "none";
 
@@ -180,22 +176,22 @@ function findNewestVersion(versions) {
   if (!versions || versions.length === 0) {
     return null;
   }
-  
+
   function compareVersions(a, b) {
     const aParts = a.split('.').map(Number);
     const bParts = b.split('.').map(Number);
-    
+
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-      const aPart = aParts[i] || 0; 
+      const aPart = aParts[i] || 0;
 	  const bPart = bParts[i] || 0;
-      
+
       if (aPart > bPart) return 1;
       if (aPart < bPart) return -1;
     }
-    
+
     return 0;
   }
-  
+
   return versions.reduce((newest, current) => {
     return compareVersions(current, newest) > 0 ? current : newest;
   });
@@ -323,7 +319,6 @@ connectButton.onclick = async () => {
   disconnectButton.style.display = "initial";
   flashButton.style.display = "initial";
   traceButton.style.display = "initial";
-  eraseButton.style.display = "initial";
   consoleDiv.style.display = "none";
 };
 
@@ -354,18 +349,6 @@ resetButton.onclick = async () => {
   }
 };
 
-eraseButton.onclick = async () => {
-  eraseButton.disabled = true;
-  try {
-    await esploader.eraseFlash();
-  } catch (e) {
-    console.error(e);
-    term.writeln(`Error: ${e.message}`);
-  } finally {
-    eraseButton.disabled = false;
-  }
-};
-
 /**
  * The built-in HTMLTableRowElement object.
  * @external HTMLTableRowElement
@@ -392,7 +375,6 @@ disconnectButton.onclick = async () => {
   disconnectButton.style.display = "none";
   traceButton.style.display = "none";
   flashButton.style.display = "none";
-  eraseButton.style.display = "none";
   lblConnTo.style.display = "none";
   alertDiv.style.display = "none";
   consoleDiv.style.display = "initial";
