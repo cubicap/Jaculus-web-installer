@@ -9209,7 +9209,6 @@ const $382e02c9bbd5d50b$var$disconnectButton = document.getElementById("disconne
 const $382e02c9bbd5d50b$var$resetButton = document.getElementById("resetButton");
 const $382e02c9bbd5d50b$var$consoleStartButton = document.getElementById("consoleStartButton");
 const $382e02c9bbd5d50b$var$consoleStopButton = document.getElementById("consoleStopButton");
-const $382e02c9bbd5d50b$var$eraseButton = document.getElementById("eraseButton");
 const $382e02c9bbd5d50b$var$terminal = document.getElementById("terminal");
 const $382e02c9bbd5d50b$var$programDiv = document.getElementById("program");
 const $382e02c9bbd5d50b$var$consoleDiv = document.getElementById("console");
@@ -9228,12 +9227,10 @@ const $382e02c9bbd5d50b$var$term = new Terminal({
 $382e02c9bbd5d50b$var$term.open($382e02c9bbd5d50b$var$terminal);
 let $382e02c9bbd5d50b$var$device = null;
 let $382e02c9bbd5d50b$var$transport;
-let $382e02c9bbd5d50b$var$esploader;
 let $382e02c9bbd5d50b$var$chip = null;
 $382e02c9bbd5d50b$var$disconnectButton.style.display = "none";
 $382e02c9bbd5d50b$var$flashButton.style.display = "none";
 $382e02c9bbd5d50b$var$traceButton.style.display = "none";
-$382e02c9bbd5d50b$var$eraseButton.style.display = "none";
 $382e02c9bbd5d50b$var$consoleStopButton.style.display = "none";
 $382e02c9bbd5d50b$var$resetButton.style.display = "none";
 /**
@@ -9441,7 +9438,6 @@ $382e02c9bbd5d50b$var$variants.onchange = $382e02c9bbd5d50b$var$onChangeVariants
     $382e02c9bbd5d50b$var$disconnectButton.style.display = "initial";
     $382e02c9bbd5d50b$var$flashButton.style.display = "initial";
     $382e02c9bbd5d50b$var$traceButton.style.display = "initial";
-    $382e02c9bbd5d50b$var$eraseButton.style.display = "initial";
     $382e02c9bbd5d50b$var$consoleDiv.style.display = "none";
 };
 $382e02c9bbd5d50b$var$flashButton.onclick = async ()=>{
@@ -9465,17 +9461,6 @@ $382e02c9bbd5d50b$var$resetButton.onclick = async ()=>{
         await $382e02c9bbd5d50b$var$transport.setDTR(true);
     }
 };
-$382e02c9bbd5d50b$var$eraseButton.onclick = async ()=>{
-    $382e02c9bbd5d50b$var$eraseButton.disabled = true;
-    try {
-        await $382e02c9bbd5d50b$var$esploader.eraseFlash();
-    } catch (e) {
-        console.error(e);
-        $382e02c9bbd5d50b$var$term.writeln(`Error: ${e.message}`);
-    } finally{
-        $382e02c9bbd5d50b$var$eraseButton.disabled = false;
-    }
-};
 /**
  * The built-in HTMLTableRowElement object.
  * @external HTMLTableRowElement
@@ -9495,7 +9480,6 @@ $382e02c9bbd5d50b$var$disconnectButton.onclick = async ()=>{
     $382e02c9bbd5d50b$var$disconnectButton.style.display = "none";
     $382e02c9bbd5d50b$var$traceButton.style.display = "none";
     $382e02c9bbd5d50b$var$flashButton.style.display = "none";
-    $382e02c9bbd5d50b$var$eraseButton.style.display = "none";
     $382e02c9bbd5d50b$var$lblConnTo.style.display = "none";
     $382e02c9bbd5d50b$var$alertDiv.style.display = "none";
     $382e02c9bbd5d50b$var$consoleDiv.style.display = "initial";
@@ -9544,4 +9528,4 @@ $382e02c9bbd5d50b$var$consoleStopButton.onclick = async ()=>{
 };
 
 
-//# sourceMappingURL=index.9ae2665d.js.map
+//# sourceMappingURL=index.d1ead932.js.map
